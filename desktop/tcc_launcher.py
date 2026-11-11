@@ -11,7 +11,6 @@ def main():
     import webview
     import uvicorn
     from fastapi.staticfiles import StaticFiles
-    from fastapi.responses import FileResponse
 
     base = Path(getattr(sys, '_MEIPASS', Path(__file__).resolve().parents[1]))
     backend = base / 'backend'
@@ -26,11 +25,17 @@ def main():
     os.environ['UPDATE_CHECK_CACHE'] = str(data / 'update_check.json')
     os.chdir(data)
     from main import app
-    app.mount('/static', StaticFiles(directory=str(frontend / 'static')), name='frontend-static')
-    @app.get('/', include_in_schema=False)
-    async def home():
-        return FileResponse(str(frontend / 'index.html'))
-    # React client-side routing uses state navigation; no arbitrary filesystem paths exposed.
+    # The upstream backend already registers GET / as a JSON health endpoint.
+    # Starlette resolves routes in registration order, so merely adding another
+    # GET / handler would never override it. Remove only that GET / route.
+    from fastapi.routing import APIRoute
+    app.router.routes[:] = [
+        route for route in app.router.routes
+        if not (isinstance(route, APIRoute) and route.path == '/' and 'GET' in route.methods)
+    ]
+    # Mount last: existing /api routes and /uploads keep precedence.
+    # The React production build uses /static for its bundled JS and CSS.
+    app.mount('/', StaticFiles(directory=str(frontend), html=True), name='frontend')
     host, port = '127.0.0.1', 8010
     with socket.socket() as sock:
         if sock.connect_ex((host, port)) == 0:
