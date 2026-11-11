@@ -1,1 +1,45 @@
-
+name: Build Traderefy Windows Installer
+on:
+  workflow_dispatch:
+  push:
+    paths: ['desktop/**', 'frontend/**', 'backend/**', '.github/workflows/tcc-windows-installer.yml']
+jobs:
+  windows-installer:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Build React frontend
+        shell: pwsh
+        run: |
+          cd frontend
+          npm ci --no-audit --no-fund
+          $env:REACT_APP_API_URL = ''
+          $env:CI = 'false'
+          npm run build
+      - name: Install Python requirements
+        run: python -m pip install -r backend/requirements.txt pyinstaller pywebview
+      - name: Build standalone desktop executable
+        run: pyinstaller --noconfirm --clean desktop/tcc.spec
+      - name: Install Inno Setup
+        shell: pwsh
+        run: choco install innosetup -y --no-progress
+      - name: Create Windows installer
+        shell: pwsh
+        run: '& "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" desktop\installer.iss'
+      - name: Verify installer exists
+        shell: pwsh
+        run: |
+          if (!(Test-Path release/Traderefy_Control_Center_Setup.exe)) { throw 'Installer not found' }
+          Get-Item release/Traderefy_Control_Center_Setup.exe | Select-Object Name,Length
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Traderefy-Control-Center-Windows-Installer
+          path: release/Traderefy_Control_Center_Setup.exe
