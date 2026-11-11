@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Plus, Pencil, GitMerge, Trash2, Search } from 'lucide-react';
-import { libraryApi, appSettingsApi } from '../api';
+import { libraryApi, appSettingsApi, traderefyJournalApi } from '../api';
 import { PageHeader } from './ui';
 import { THEMES, activeTheme, setTheme } from '../theme';
 
@@ -326,6 +326,45 @@ const TIMEZONE_OPTIONS = [
   { value: 'Australia/Sydney', label: 'Sydney' },
 ];
 
+function TraderefyAccountSetup() {
+  const [busy, setBusy] = useState(false);
+  const [result, setResult] = useState(null);
+  const [error, setError] = useState(null);
+  const provision = async () => {
+    setBusy(true);
+    setError(null);
+    setResult(null);
+    try {
+      const response = await traderefyJournalApi.setupAccounts();
+      setResult(response.data);
+    } catch (err) {
+      setError(errText(err));
+    } finally {
+      setBusy(false);
+    }
+  };
+  return (
+    <section className="card" style={{ padding: 'var(--space-5)', maxWidth: 560, marginBottom: 20 }}>
+      <h3 style={{ marginTop: 0 }}>Traderefy SIM Journal accounts</h3>
+      <p className="text-muted" style={{ fontSize: 13 }}>
+        Set up Sim101, SimIBS, SimFTR, and SimIBSHook in this Journal database.
+        Existing accounts and trades are preserved. Running this again will not
+        create duplicate accounts. These are local Journal records, not connected
+        NinjaTrader accounts, and cannot place orders.
+      </p>
+      <button type="button" className="btn btn-primary" disabled={busy} onClick={provision}>
+        {busy ? 'Setting up...' : 'Set up Traderefy SIM accounts'}
+      </button>
+      {error && <p className="notice neg" role="alert">{error}</p>}
+      {result && <p className="notice pos" role="status">
+        Created: {result.created.length ? result.created.join(', ') : 'none'}.
+        Already existed: {result.existing.length ? result.existing.join(', ') : 'none'}.
+        Reload TCC to refresh the account selector.
+      </p>}
+    </section>
+  );
+}
+
 /** General app settings: currently just the CSV import timezone. */
 function GeneralSettings() {
   const [timezone, setTimezone] = useState('');
@@ -358,6 +397,8 @@ function GeneralSettings() {
   };
 
   return (
+    <>
+    <TraderefyAccountSetup />
     <div className="card" style={{ padding: 'var(--space-5)', maxWidth: 560 }}>
       <h3 style={{ marginTop: 0 }}>Import timezone</h3>
       <p className="text-muted" style={{ fontSize: 13, marginBottom: 'var(--space-4)' }}>
@@ -391,6 +432,7 @@ function GeneralSettings() {
         </select>
       )}
     </div>
+    </>
   );
 }
 

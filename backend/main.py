@@ -306,6 +306,35 @@ def update_account(account_id: int, data: AccountUpdate, conn: sqlite3.Connectio
     return row_to_dict(row)
 
 
+# R4: Explicit, idempotent local Journal account setup. This does not connect to
+# NinjaTrader, create broker accounts, or enable order execution.
+TRADEREFY_SIM_ACCOUNTS = (
+    ("Sim101", "#60a5fa"),
+    ("SimIBS", "#34d399"),
+    ("SimFTR", "#f5b83d"),
+    ("SimIBSHook", "#a78bfa"),
+)
+
+
+@app.post("/api/traderefy/journal/setup-accounts")
+def setup_traderefy_journal_accounts(conn: sqlite3.Connection = Depends(get_connection)):
+    existing = {row["name"].casefold(): row for row in conn.execute("SELECT * FROM accounts").fetchall()}
+    created = []
+    reused = []
+    for name, color in TRADEREFY_SIM_ACCOUNTS:
+        if name.casefold() in existing:
+            reused.append(name)
+            continue
+        conn.execute(
+            "INSERT INTO accounts (name, type, color, broker) VALUES (?,?,?,?)",
+            (name, "day_trading", color, "NinjaTrader (journal only)"),
+        )
+        created.append(name)
+    conn.commit()
+    return {"created": created, "existing": reused, "execution_enabled": False,
+            "connected_to_ninjatrader": False}
+
+
 @app.get("/api/accounts/{account_id}/usage")
 def account_usage(account_id: int, conn: sqlite3.Connection = Depends(get_connection)):
     """What deleting this account would remove, for the confirmation dialog."""

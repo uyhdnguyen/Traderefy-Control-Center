@@ -153,3 +153,8 @@ export const pointValuesApi = {
 export const updateApi = {
   get: () => api.get('/api/update'),
 };
+
+// R4: Provision local Traderefy SIM Journal accounts; no order execution.
+export const traderefyJournalApi = {
+  setupAccounts: () => api.post('/api/traderefy/journal/setup-accounts'),
+};
