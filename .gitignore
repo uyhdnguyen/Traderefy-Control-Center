@@ -1,0 +1,31 @@
+# secrets
+.env
+backend/.env
+
+# databases
+*.db
+*.db-wal
+*.db-shm
+*.bak
+*.bak-*
+
+# python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# node / react
+node_modules/
+frontend/build/
+build/
+
+# runtime uploads
+uploads/
+backend/uploads/
+
+# windows shortcuts
+*.lnk
+
+# once-a-day release check cache
+backend/update_check.json
