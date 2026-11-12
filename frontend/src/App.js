@@ -15,6 +15,7 @@ import Reports from './components/Reports';
 import Help from './components/Help';
 import Settings from './components/Settings';
 import ExitLab from './components/ExitLab';
+import TusControlCenter from './components/TusControlCenter';
 import { DemoLabel } from './components/exitlab/shared';
 import UpdateBanner from './components/UpdateBanner';
 import { accountFilter, singleAccountId } from './accountSelection';
@@ -171,6 +172,7 @@ export default function App() {
         {page === 'reports' && (
           <Reports accountId={accountId} onOpenDetail={handleOpenDetail} initial={reportsReturn} />
         )}
+        {page === 'tus-control' && <TusControlCenter />}
         {page === 'help' && <Help />}
         {page === 'settings' && <Settings />}
         {page === 'exit-lab' && (

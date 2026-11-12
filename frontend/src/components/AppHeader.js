@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import {
   LayoutDashboard, TrendingUp, BarChart2, BookOpen, Plus, ChevronDown,
-  CalendarDays, Check, X, Pencil, CalendarCheck, HelpCircle, Upload, Brain, FlaskConical, Settings as SettingsIcon, Trash2,
+  CalendarDays, Check, X, Pencil, CalendarCheck, HelpCircle, Upload, Brain, FlaskConical, Settings as SettingsIcon, Trash2, Activity,
 } from 'lucide-react';
 import { accountsApi } from '../api';
 import { selectionLabel } from '../accountSelection';
@@ -13,6 +13,7 @@ import traderefyLogo from '../assets/traderefy-wordmark.png';
 // account selector, Help and Settings on the right; seven pages keep their labels.
 const NAV_ITEMS = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { id: 'tus-control', label: 'TUS Control', icon: Activity },
   { id: 'trades', label: 'Trade View', icon: TrendingUp },
   { id: 'calendar', label: 'Calendar', icon: CalendarDays },
   { id: 'day-review', label: 'Day Review', icon: CalendarCheck },
