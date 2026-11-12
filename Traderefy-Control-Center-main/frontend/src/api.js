@@ -1,0 +1,160 @@
+import axios from 'axios';
+
+// Defaults to the local backend. REACT_APP_API_URL can point the frontend at
+// another origin (a second instance, a container, a LAN machine).
+export const API_BASE = (process.env.REACT_APP_API_URL ?? 'http://localhost:8010').replace(/\/+$/, '');
+
+const api = axios.create({ baseURL: API_BASE });
+
+export const exitlabApi = {
+  history: (body) => api.post('/api/exitlab/history', body),
+  simpleReplay: (id) => api.get(`/api/exitlab/trades/${id}/simple`),
+  settings: () => api.get('/api/exitlab/settings'),
+  saveSettings: (body) => api.put('/api/exitlab/settings', body),
+  rules: () => api.get('/api/exitlab/rules'),
+  assignRule: (id, setups) => api.patch(`/api/exitlab/rules/${id}`, { applies_to_setups: setups }),
+  showRule: (id, show) => api.patch(`/api/exitlab/rules/${id}`, { show_in_tables: show }),
+  saveRule: (rule) => api.post('/api/exitlab/rules', rule),
+  readiness: (accountId, feed) => api.get('/api/exitlab/readiness', { params: { account_id: accountId, feed } }),
+  stop: (id, body) => api.post(`/api/exitlab/trades/${id}/stops`, body),
+  fetchBars: (body) => api.post('/api/exitlab/bars/fetch', body),
+  loadMissing: (accountId) => api.post('/api/exitlab/bars/load-missing', { account_id: accountId }),
+  loadMissingStatus: () => api.get('/api/exitlab/bars/load-missing/status'),
+};
+
+export const accountsApi = {
+  list: () => api.get('/api/accounts'),
+  create: (data) => api.post('/api/accounts', data),
+  update: (id, data) => api.put(`/api/accounts/${id}`, data),
+  usage: (id) => api.get(`/api/accounts/${id}/usage`),
+  remove: (id) => api.delete(`/api/accounts/${id}`),
+};
+
+export const tradesApi = {
+  list: (params) => api.get('/api/trades', { params }),
+  create: (data) => api.post('/api/trades', data),
+  update: (id, data) => api.put(`/api/trades/${id}`, data),
+  delete: (id) => api.delete(`/api/trades/${id}`),
+  moveAccount: (id, accountId) => api.patch(`/api/trades/${id}/account`, { account_id: accountId }),
+  // Notes and tags are per account: two accounts can share a trade_group name.
+  getAnalysis: (group, accountId) =>
+    api.get(`/api/trades/${encodeURIComponent(group)}/analysis`, { params: { account_id: accountId } }),
+  getAnalysisOptions: () => api.get('/api/analysis-options'),
+  updateAnalysis: (group, accountId, data) =>
+    api.patch(`/api/trades/${encodeURIComponent(group)}/analysis`, data, { params: { account_id: accountId } }),
+  addTag: (group, accountId, data) =>
+    api.post(`/api/trades/${encodeURIComponent(group)}/tags`, data, { params: { account_id: accountId } }),
+  deleteTag: (tagId) => api.delete(`/api/trade-tags/${tagId}`),
+  setSetup: (id, setup, note) => api.patch(`/api/trades/${id}/setup`, { setup, note }),
+  listCustomSetups: () => api.get('/api/setups/custom'),
+  createCustomSetup: (data) => api.post('/api/setups/custom', data),
+  deleteCustomSetup: (id) => api.delete(`/api/setups/custom/${id}`),
+  addExecution: (id, data) => api.post(`/api/trades/${id}/executions`, data),
+  updateExecution: (id, idx, data) => api.put(`/api/trades/${id}/executions/${idx}`, data),
+  deleteExecution: (id, idx) => api.delete(`/api/trades/${id}/executions/${idx}`),
+};
+
+export const importApi = {
+  importCsv: (formData) => api.post('/api/import-csv', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  }),
+  uploadDiary: (formData) => api.post('/api/upload-diary', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  }),
+};
+
+// Leak Finder: the slices of your trading ranked by what they cost (backend/leaks.py).
+export const leaksApi = {
+  get: (params) => api.get('/api/leaks', { params }),
+  explain: (params) => api.get('/api/leaks/explain', { params }),
+};
+
+export const kpisApi = {
+  get: (params) => api.get('/api/kpis', { params }),
+};
+
+export const diaryApi = {
+  list: (params) => api.get('/api/diary', { params }),
+  delete: (id) => api.delete(`/api/diary/${id}`),
+  deleteByDate: (date, accountId) => api.delete(`/api/diary/by-date/${date}`, { params: accountId != null ? { account_id: accountId } : {} }),
+};
+
+// Edge Trader Sync: one trade's stop, target and note events (backend/edge_sync.py).
+export const edgeSyncApi = {
+  tradeEvents: (group, accountId) =>
+    api.get('/api/sync/trade-events', { params: { trade_group: group, account_id: accountId } }),
+};
+
+export const chartApi = {
+  get: (ticker, date, timeframe = '1Min', daysBack = 1) =>
+    api.get(`/api/chart/${encodeURIComponent(ticker)}/${date}`, { params: { timeframe, days_back: daysBack } }),
+};
+
+export const insightsApi = {
+  get: (params) => api.get('/api/insights', { params }),
+};
+
+export const calendarApi = {
+  get: (params) => api.get('/api/calendar', { params }),
+};
+
+export const brainApi = {
+  chat: (messages, accountId) =>
+    api.post('/api/brain', { messages, account_id: accountId }),
+};
+
+export const dailySummaryApi = {
+  get: (params) => api.get('/api/daily-summary', { params }),
+};
+
+export const goalsApi = {
+  get: (params) => api.get('/api/goals', { params }),
+  put: (data) => api.put('/api/goals', data),
+};
+
+export const reportsApi = {
+  get: (params) => api.get('/api/reports', { params }),
+};
+
+// Settings > Library: strategy names, sources and tags. `item` is
+// { kind: 'strategy' | 'source' | 'tag', tag_type?, name, ... }.
+export const libraryApi = {
+  list: () => api.get('/api/library'),
+  create: (item) => api.post('/api/library', item),
+  update: (item) => api.put('/api/library', item),
+  merge: (item) => api.post('/api/library/merge', item),
+  remove: (item) => api.post('/api/library/delete', item),
+};
+
+// Settings > General: app-wide preferences, currently just the timezone
+// used to convert broker CSV import timestamps to exchange (Eastern) time.
+export const appSettingsApi = {
+  get: () => api.get('/api/app-settings'),
+  put: (data) => api.put('/api/app-settings', data),
+};
+
+export const edgeReportApi = {
+  get: (params) => api.get('/api/edge-report', { params }),
+};
+
+export const weeklySummaryApi = {
+  get: (params) => api.get('/api/weekly-summary', { params }),
+};
+
+export const yearlyKpisApi = {
+  get: (params) => api.get('/api/yearly-kpis', { params }),
+};
+
+// Newer release on GitHub? Answered by the backend's once-a-day startup check.
+export const pointValuesApi = {
+  get: () => api.get('/api/point-values'),
+};
+
+export const updateApi = {
+  get: () => api.get('/api/update'),
+};
+
+// R4: Provision local Traderefy SIM Journal accounts; no order execution.
+export const traderefyJournalApi = {
+  setupAccounts: () => api.post('/api/traderefy/journal/setup-accounts'),
+};
