@@ -15,13 +15,13 @@ import Reports from './components/Reports';
 import Help from './components/Help';
 import Settings from './components/Settings';
 import ExitLab from './components/ExitLab';
-import TusControlCenter from './components/TusControlCenter';
+import ControlWorkspace from './components/ControlWorkspace';
 import { DemoLabel } from './components/exitlab/shared';
 import UpdateBanner from './components/UpdateBanner';
 import { accountFilter, singleAccountId } from './accountSelection';
 
 export default function App() {
-  const [page, setPage] = useState('dashboard');
+  const [page, setPage] = useState('control-overview');
   const [accounts, setAccounts] = useState([]);
   // [] is All Accounts. Pages get accountId: null, one id, or "1,4" for several.
   const [selectedAccountIds, setSelectedAccountIds] = useState([]);
@@ -70,8 +70,7 @@ export default function App() {
 
   const handleTradeAdded = () => {
     setShowAddTrade(false);
-    if (page === 'dashboard') setPage('_refresh');
-    setTimeout(() => setPage('dashboard'), 0);
+    if (page === 'dashboard') { setPage('_refresh'); setTimeout(() => setPage('dashboard'), 0); }
   };
 
   const handleCalendarDayClick = (date) => {
@@ -172,7 +171,7 @@ export default function App() {
         {page === 'reports' && (
           <Reports accountId={accountId} onOpenDetail={handleOpenDetail} initial={reportsReturn} />
         )}
-        {page === 'tus-control' && <TusControlCenter />}
+        {page.startsWith('control-') && <ControlWorkspace key={page} page={page} accountId={accountId} accounts={accounts} onNavigate={navigate} />}
         {page === 'help' && <Help />}
         {page === 'settings' && <Settings />}
         {page === 'exit-lab' && (

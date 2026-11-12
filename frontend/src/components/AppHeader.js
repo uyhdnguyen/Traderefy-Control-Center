@@ -11,16 +11,24 @@ import traderefyLogo from '../assets/traderefy-wordmark.png';
 
 // Every page stays one click away. Import, Brain and Add Trade live with the
 // account selector, Help and Settings on the right; seven pages keep their labels.
-const NAV_ITEMS = [
-  { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { id: 'tus-control', label: 'TUS Control', icon: Activity },
-  { id: 'trades', label: 'Trade View', icon: TrendingUp },
+const CONTROL_NAV = [
+  { id: 'control-overview', label: 'Overview', icon: LayoutDashboard },
+  { id: 'control-market', label: 'Market', icon: TrendingUp },
+  { id: 'control-strategies', label: 'Strategies', icon: Activity },
+  { id: 'control-risk', label: 'Risk', icon: BarChart2 },
+  { id: 'control-execution', label: 'Execution', icon: ShieldCheck },
+  { id: 'control-diagnostics', label: 'Diagnostics', icon: FlaskConical },
+];
+const JOURNAL_NAV = [
+  { id: 'dashboard', label: 'Overview', icon: LayoutDashboard },
+  { id: 'trades', label: 'Trade Log', icon: TrendingUp },
   { id: 'calendar', label: 'Calendar', icon: CalendarDays },
-  { id: 'day-review', label: 'Day Review', icon: CalendarCheck },
   { id: 'reports', label: 'Reports', icon: BarChart2 },
   { id: 'exit-lab', label: 'Exit Lab', icon: FlaskConical },
   { id: 'diary', label: 'Diary', icon: BookOpen },
-
+  { id: 'day-review', label: 'Day Review', icon: CalendarCheck },
+  { id: 'import', label: 'Import', icon: Upload },
+  { id: 'settings', label: 'Settings', icon: SettingsIcon },
 ];
 
 const NEW_ACCOUNT_DEFAULT = { name: '', type: 'day_trading', color: '#6366f1', broker: 'Thinkorswim' };
@@ -354,6 +362,7 @@ export default function AppHeader({
 }) {
   // Trade detail keeps the page it was opened from highlighted (Trade View, Exit Lab or Reports).
   const activeId = page === 'trade-detail' ? detailOrigin : page;
+  const inControl = page.startsWith('control-');
 
   return (
     <header className="app-header">
@@ -382,8 +391,12 @@ export default function AppHeader({
           </span>
         </button>
 
-        <nav className="app-nav" aria-label="Main">
-          {NAV_ITEMS.map(({ id, label, icon: Icon }) => (
+        <nav className="app-nav tcc-workspace-tabs" aria-label="Workspaces">
+          <button type="button" className={`app-nav-item${inControl ? ' active' : ''}`} aria-current={inControl ? 'page' : undefined} onClick={() => onNavigate('control-overview')}><LayoutDashboard size={17}/> DASHBOARD</button>
+          <button type="button" className={`app-nav-item${!inControl ? ' active' : ''}`} aria-current={!inControl ? 'page' : undefined} onClick={() => onNavigate('dashboard')}><BookOpen size={17}/> JOURNAL</button>
+        </nav>
+        <nav className="tcc-workspace-subnav" aria-label={inControl ? 'Dashboard sections' : 'Journal sections'}>
+          {(inControl ? CONTROL_NAV : JOURNAL_NAV).map(({ id, label, icon: Icon }) => (
             <button
               key={id}
               type="button"
