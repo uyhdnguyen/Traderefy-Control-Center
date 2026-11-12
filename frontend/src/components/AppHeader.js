@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import {
   LayoutDashboard, TrendingUp, BarChart2, BookOpen, Plus, ChevronDown,
-  CalendarDays, Check, X, Pencil, CalendarCheck, HelpCircle, Upload, Brain, FlaskConical, Settings as SettingsIcon, Trash2, Activity,
+  CalendarDays, Check, X, Pencil, CalendarCheck, HelpCircle, Upload, Brain, FlaskConical, Settings as SettingsIcon, Trash2, Activity, ShieldCheck,
 } from 'lucide-react';
 import { accountsApi } from '../api';
 import { selectionLabel } from '../accountSelection';
