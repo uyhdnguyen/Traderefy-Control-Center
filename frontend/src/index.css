@@ -33,12 +33,12 @@
   --accent-soft: rgba(145, 168, 255, 0.14);
 
   /* ---- Result semantics ---- */
-  --result-pos: #66D7AC;
-  --result-neg: #F28B94;
+  --result-pos: #58D297;
+  --result-neg: #F47D7D;
   --caution: #E9BA78;
   --caution-soft: rgba(233, 186, 120, 0.12);
-  --pos-line: rgba(102, 215, 172, 0.3);
-  --neg-line: rgba(242, 139, 148, 0.35);
+  --pos-line: rgba(88, 210, 151, 0.3);
+  --neg-line: rgba(244, 125, 125, 0.35);
   --caution-line: rgba(233, 186, 120, 0.35);
   --accent-line-soft: rgba(145, 168, 255, 0.28);
   --accent-line-hover: rgba(145, 168, 255, 0.55);
@@ -1325,7 +1325,7 @@ button.month-card:active { transform: translateY(1px); }
  --text-tertiary:#B1C5D8; --divider:#38658C; --divider-soft:#2B5276;
  --divider-strong:#38658C; --action-primary:#F5B83D; --action-primary-text:#0B1E33;
  --accent-line:#F5B83D; --accent-soft:rgba(245,184,61,.13);
- --result-pos:#34D399; --result-neg:#F87171; --cal-pos:#173F3B; --cal-neg:#493044;
+ --result-pos:#58D297; --result-neg:#F47D7D; --cal-pos:#173F3B; --cal-neg:#493044;
  --header-h:0px; --sticky-offset:20px;
 }
 @media(min-width:1000px) {

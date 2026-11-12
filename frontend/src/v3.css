@@ -30,12 +30,12 @@
   --accent-line-soft: rgba(240, 169, 59, 0.30);
   --accent-line-hover: rgba(240, 169, 59, 0.58);
 
-  --result-pos: #37D399;
-  --result-neg: #FF4D5E;
+  --result-pos: #58D297;
+  --result-neg: #F47D7D;
   --caution: #F0A93B;
   --caution-soft: rgba(240, 169, 59, 0.12);
-  --pos-line: rgba(55, 211, 153, 0.32);
-  --neg-line: rgba(255, 77, 94, 0.34);
+  --pos-line: rgba(88, 210, 151, 0.3);
+  --neg-line: rgba(244, 125, 125, 0.35);
   --scrim: rgba(5, 8, 11, 0.74);
   --edge-shadow: rgba(0, 0, 0, 0.62);
   --cal-pos: #12281F;
