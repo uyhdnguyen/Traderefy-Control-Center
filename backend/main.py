@@ -42,6 +42,7 @@ from library import router as library_router, init_library_tables, apply_aliases
 from exitlab.api import router as exitlab_router
 import edge_sync
 import update_check
+from tus_bridge import router as tus_bridge_router
 
 load_dotenv()
 
@@ -88,6 +89,7 @@ app.include_router(library_router)
 app.include_router(exitlab_router)
 # Edge Trader for Schwab sync: acts only on a POST from Edge Trader's Apply (backend/edge_sync.py)
 app.include_router(edge_sync.router)
+app.include_router(tus_bridge_router)
 
 
 @app.get("/api/update")
