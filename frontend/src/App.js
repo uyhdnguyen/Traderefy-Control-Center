@@ -16,6 +16,8 @@ import Help from './components/Help';
 import Settings from './components/Settings';
 import ExitLab from './components/ExitLab';
 import ControlWorkspace from './components/ControlWorkspace';
+import TccDashboard from './components/TccDashboard';
+import TusJournal from './components/TusJournal';
 import { DemoLabel } from './components/exitlab/shared';
 import UpdateBanner from './components/UpdateBanner';
 import { accountFilter, singleAccountId } from './accountSelection';
@@ -171,7 +173,9 @@ export default function App() {
         {page === 'reports' && (
           <Reports accountId={accountId} onOpenDetail={handleOpenDetail} initial={reportsReturn} />
         )}
-        {page.startsWith('control-') && <ControlWorkspace key={page} page={page} accountId={accountId} accounts={accounts} onNavigate={navigate} />}
+        {page === 'tus-journal' && <TusJournal />}
+        {page === 'control-overview' && <TccDashboard onNavigate={navigate} />}
+        {page.startsWith('control-') && page !== 'control-overview' && <ControlWorkspace key={page} page={page} accountId={accountId} accounts={accounts} onNavigate={navigate} />}
         {page === 'help' && <Help />}
         {page === 'settings' && <Settings />}
         {page === 'exit-lab' && (

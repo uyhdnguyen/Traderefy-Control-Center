@@ -42,7 +42,8 @@ from library import router as library_router, init_library_tables, apply_aliases
 from exitlab.api import router as exitlab_router
 import edge_sync
 import update_check
-from tus_bridge import router as tus_bridge_router
+import tcc_api
+import tus_import
 
 load_dotenv()
 
@@ -56,11 +57,15 @@ async def lifespan(app: FastAPI):
     try:
         init_library_tables(_conn)
         edge_sync.init_sync_tables(_conn)
+        tus_import.ensure_schema(_conn)
     finally:
         _conn.close()
     Path(UPLOAD_DIR).mkdir(exist_ok=True)
     update_check.start_background_check()
+    # R10: import the TUS journal into the journal database now and whenever it changes.
+    tcc_api.start_auto_import()
     yield
+    tcc_api.stop_auto_import()
 
 
 app = FastAPI(title="Trading Journal AI API", lifespan=lifespan)
@@ -89,7 +94,7 @@ app.include_router(library_router)
 app.include_router(exitlab_router)
 # Edge Trader for Schwab sync: acts only on a POST from Edge Trader's Apply (backend/edge_sync.py)
 app.include_router(edge_sync.router)
-app.include_router(tus_bridge_router)
+app.include_router(tcc_api.router)
 
 
 @app.get("/api/update")
@@ -109,13 +114,29 @@ def get_connection():
 
 
 def account_ids(account_id: str | None = Query(None)) -> list[int] | None:
-    """?account_id=1 or ?account_id=1,4. None means all accounts."""
+    """?account_id=1 or ?account_id=1,4. None means all accounts.
+
+    R10: "all accounts" excludes TUS Playback accounts so Playback results never mix
+    with SIM forward tests or real trading. Select a Playback account to see it.
+    """
     if account_id is None or not account_id.strip():
-        return None
+        return _all_accounts_excluding_playback()
     try:
         return sorted({int(p) for p in account_id.split(",") if p.strip()}) or None
     except ValueError:
         raise HTTPException(status_code=422, detail="account_id must be an id or a comma-separated list of ids")
+
+
+def _all_accounts_excluding_playback() -> list[int] | None:
+    conn = get_db()
+    try:
+        playback = tus_import.playback_account_ids(conn)
+        if not playback:
+            return None
+        ids = [r[0] for r in conn.execute("SELECT id FROM accounts ORDER BY id") if r[0] not in playback]
+    finally:
+        conn.close()
+    return ids or [0]   # only Playback accounts exist: "all" shows nothing rather than mixing
 
 
 def _summary_cache_key(key: str, account_id: list[int] | None) -> tuple[str, int | None]:
@@ -858,8 +879,8 @@ def update_trade(trade_id: int, data: dict, conn: sqlite3.Connection = Depends(g
                'instrument_type', 'option_expiry', 'option_strike', 'option_type'}
     updates = {k: v for k, v in data.items() if k in allowed}
 
-    if trade.get('source') in ('imported', 'demo'):
-        updates['source'] = 'edited'
+    if trade.get('source') in ('imported', 'demo', 'tus'):
+        updates['source'] = 'edited'   # the TUS importer never overwrites an edited trade
 
     if updates:
         set_clause = ', '.join(f"{k}=?" for k in updates)

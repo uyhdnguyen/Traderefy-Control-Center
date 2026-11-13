@@ -33,6 +33,13 @@ hidden = [
     "edge_sync",
     "update_check",
     "exitlab.api",
+    # R10 NinjaTrader integration
+    "nt_paths",
+    "nt_telemetry",
+    "tus_bridge",
+    "tus_journal",
+    "tus_import",
+    "tcc_api",
 ]
 
 for mod in [

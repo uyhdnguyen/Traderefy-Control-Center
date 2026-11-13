@@ -158,3 +158,15 @@ export const updateApi = {
 export const traderefyJournalApi = {
   setupAccounts: () => api.post('/api/traderefy/journal/setup-accounts'),
 };
+
+// R10: NinjaTrader telemetry (TUS / TEE / TEM per instrument) and the TUS journal import.
+// Read-only: none of these submit, modify or cancel orders.
+export const tccApi = {
+  live: (refreshDiscovery = false) => api.get('/api/tcc/live', { params: refreshDiscovery ? { refresh_discovery: true } : {} }),
+  diagnostics: () => api.get('/api/tcc/diagnostics'),
+  bridge: () => api.get('/api/tus/snapshot'),
+  journal: () => api.get('/api/tus/journal/snapshot'),
+  importStatus: () => api.get('/api/tus/import/status'),
+  importRun: () => api.post('/api/tus/import/run'),
+  purgeRemoved: () => api.post('/api/tus/import/purge-removed'),
+};

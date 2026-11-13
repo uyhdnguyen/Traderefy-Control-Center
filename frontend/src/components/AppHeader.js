@@ -11,16 +11,10 @@ import traderefyLogo from '../assets/traderefy-wordmark.png';
 
 // Every page stays one click away. Import, Brain and Add Trade live with the
 // account selector, Help and Settings on the right; seven pages keep their labels.
-const CONTROL_NAV = [
-  { id: 'control-overview', label: 'Overview', icon: LayoutDashboard },
-  { id: 'control-market', label: 'Market', icon: TrendingUp },
-  { id: 'control-strategies', label: 'Strategies', icon: Activity },
-  { id: 'control-risk', label: 'Risk', icon: BarChart2 },
-  { id: 'control-execution', label: 'Execution', icon: ShieldCheck },
-  { id: 'control-diagnostics', label: 'Diagnostics', icon: FlaskConical },
-];
+const CONTROL_NAV = []; // One dashboard, no control sub-tabs.
 const JOURNAL_NAV = [
   { id: 'dashboard', label: 'Overview', icon: LayoutDashboard },
+  { id: 'tus-journal', label: 'TUS Trades', icon: Activity },
   { id: 'trades', label: 'Trade Log', icon: TrendingUp },
   { id: 'calendar', label: 'Calendar', icon: CalendarDays },
   { id: 'reports', label: 'Reports', icon: BarChart2 },

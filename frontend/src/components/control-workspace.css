@@ -19,3 +19,7 @@
  .app-shell:has(.tcc-workspace-subnav) .app-main{margin-left:0!important;width:100%!important;max-width:none!important}
  .app-shell:has(.tcc-workspace-subnav) .tcc-workspace-subnav{top:70px}
 }
+/* R10: live-data states. Amber reuses the existing .cw-warning palette; no new colours. */
+.cw-status.warning{background:#352a1d;color:#f1d7ac}
+.cw-trend.tcc-trend4{grid-template-columns:repeat(4,minmax(0,1fr))}.cw-trend.tcc-trend4>div{padding:9px 5px;gap:6px}
+.cw-table.tcc-levels th,.cw-table.tcc-levels td{padding:6px 6px;font-size:12px}.cw-table.tcc-levels th{color:#9eafc0;font-weight:600}
